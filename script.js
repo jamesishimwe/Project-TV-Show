@@ -7,8 +7,11 @@ function setup() {
 function makePageForEpisodes(episodeList) {
   
   const rootElem = document.getElementById("root");
+  const copyWriter = document.createElement("div");
+  copyWriter.classList.add("copywriter");
+  copyWriter.innerHTML = `<p>All data is from <a href="https://www.tvmaze.com/" target="_blank">TVmaze.com</a></p>`;
+  document.body.appendChild(copyWriter);
   episodeList.forEach((episode) => {
-    console.log(typeof(episode.season));
     if(episode.season < 10) {
         episode.season = " 0" + episode.season;
         }
@@ -16,7 +19,10 @@ function makePageForEpisodes(episodeList) {
         episode.number = " 0" + episode.number;
           }
     const episodeElem = document.createElement("div");
-    
+    episodeElem.style.border = "1px solid black";
+    episodeElem.style.margin = "10px";
+    episodeElem.style.padding = "10px";
+    episodeElem.style.color = "rgb(38, 142, 190)";
     episodeElem.classList.add("episode");
     episodeElem.innerHTML = `
       <h2>${episode.name}</h2>
