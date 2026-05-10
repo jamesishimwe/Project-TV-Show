@@ -110,6 +110,10 @@ function makePageForShows(showList, content) {
     ${show.image ? `<img src="${show.image.medium}" alt="${show.name}">` : ""}
 
     <p>${show.summary || "No summary available"}</p>
+    <p><strong>Genres:</strong> ${show.genres.join(", ") || "N/A"}</p>
+    <p><strong>Status:</strong> ${show.status || "N/A"}</p>
+    <p><strong>Rating:</strong> ${show.rating?.average || "N/A"}</p>
+    <p><strong>Runtime:</strong> ${show.runtime ? show.runtime + " min" : "N/A"}</p>
     `;
 
     rootElem.appendChild(showElem);
