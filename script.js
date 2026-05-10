@@ -1,14 +1,28 @@
+const fetchCache = {};
+
+async function fetchOnce(url) {
+  if (fetchCache[url]) {
+    return fetchCache[url];
+  }
+
+  const data = await fetch(url).then((response) => response.json());
+
+  fetchCache[url] = data;
+
+  return data;
+}
+
 async function setup() {
-  const allShows = await fetch("https://api.tvmaze.com/shows")
-    .then((response) => response.json())
-    .catch((error) => {
+  const allShows = await fetchOnce("https://api.tvmaze.com/shows").catch(
+    (error) => {
       document.body.innerHTML = `
       <p style="color:red;">
       Error fetching shows: ${error.message}
       </p>
       `;
       return [];
-    });
+    },
+  );
 
   if (!Array.isArray(allShows)) {
     document.body.innerHTML = `
@@ -53,6 +67,7 @@ async function setup() {
 
     showSelect.appendChild(option);
   });
+
   const freeText = document.createElement("span");
 
   freeText.style.color = "white";
@@ -60,27 +75,33 @@ async function setup() {
 
   topBar.appendChild(freeText);
 
-
   const content = document.createElement("div");
 
   app.appendChild(content);
+
   const searchInput = document.createElement("input");
 
   searchInput.placeholder = "Search shows...";
   searchInput.style.padding = "8px";
 
   topBar.appendChild(searchInput);
-  
+
   searchInput.addEventListener("input", (event) => {
     const searchTerm = event.target.value.toLowerCase();
-    const filteredShows = allShows.filter((show) =>
-      show.name.toLowerCase().includes(searchTerm) || (show.summary || "").toLowerCase().includes(searchTerm) || show.genres.some((genre) => genre.toLowerCase().includes(searchTerm)),
+
+    const filteredShows = allShows.filter(
+      (show) =>
+        show.name.toLowerCase().includes(searchTerm) ||
+        (show.summary || "").toLowerCase().includes(searchTerm) ||
+        show.genres.some((genre) =>
+          genre.toLowerCase().includes(searchTerm),
+        ),
     );
-    
+
     content.innerHTML = "";
+
     makePageForShows(filteredShows, content);
-  }
-  );
+  });
 
   makePageForShows(allShows, content);
 
@@ -94,18 +115,16 @@ async function setup() {
       return;
     }
 
-    const episodes = await fetch(
+    const episodes = await fetchOnce(
       `https://api.tvmaze.com/shows/${selectedShowId}/episodes`,
-    )
-      .then((response) => response.json())
-      .catch((error) => {
-        content.innerHTML = `
+    ).catch((error) => {
+      content.innerHTML = `
         <p style="color:red;">
         Error fetching episodes: ${error.message}
         </p>
-        `;
-        return [];
-      });
+      `;
+      return [];
+    });
 
     if (!Array.isArray(episodes)) {
       content.innerHTML = `
@@ -117,6 +136,7 @@ async function setup() {
     }
 
     makePageForEpisodes(episodes, content);
+
     const navigation = document.createElement("div");
 
     navigation.style.padding = "20px";
@@ -193,18 +213,16 @@ function makePageForShows(showList, content) {
     title.addEventListener("click", async () => {
       content.innerHTML = "";
 
-      const episodes = await fetch(
+      const episodes = await fetchOnce(
         `https://api.tvmaze.com/shows/${show.id}/episodes`,
-      )
-        .then((response) => response.json())
-        .catch((error) => {
-          content.innerHTML = `
+      ).catch((error) => {
+        content.innerHTML = `
           <p style="color:red;">
           Error fetching episodes: ${error.message}
           </p>
-          `;
-          return [];
-        });
+        `;
+        return [];
+      });
 
       if (!Array.isArray(episodes)) {
         content.innerHTML = `
