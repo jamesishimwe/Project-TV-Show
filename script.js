@@ -47,6 +47,7 @@ async function setup() {
 
   const content = document.createElement("div");
   app.appendChild(content);
+  makePageForShows(allShows, content);
 
   showSelect.addEventListener("change", async (event) => {
     const selectedShowId = event.target.value;
@@ -81,6 +82,36 @@ async function setup() {
     }
 
     makePageForEpisodes(episodes, content);
+  });
+}
+
+function makePageForShows(showList, content) {
+  const rootElem = document.createElement("div");
+
+  rootElem.style.display = "grid";
+  rootElem.style.gridTemplateColumns = "repeat(auto-fit, minmax(300px, 1fr))";
+  rootElem.style.gap = "20px";
+  rootElem.style.padding = "20px";
+
+  content.appendChild(rootElem);
+
+  showList.forEach((show) => {
+    const showElem = document.createElement("div");
+
+    showElem.style.border = "1px solid #ccc";
+    showElem.style.borderRadius = "10px";
+    showElem.style.padding = "15px";
+    showElem.style.backgroundColor = "white";
+
+    showElem.innerHTML = `
+    <h2>${show.name}</h2>
+
+    ${show.image ? `<img src="${show.image.medium}" alt="${show.name}">` : ""}
+
+    <p>${show.summary || "No summary available"}</p>
+    `;
+
+    rootElem.appendChild(showElem);
   });
 }
 
