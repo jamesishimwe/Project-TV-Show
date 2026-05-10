@@ -53,10 +53,34 @@ async function setup() {
 
     showSelect.appendChild(option);
   });
+  const freeText = document.createElement("span");
+
+  freeText.style.color = "white";
+  freeText.textContent = "or search for a show below";
+
+  topBar.appendChild(freeText);
+
 
   const content = document.createElement("div");
 
   app.appendChild(content);
+  const searchInput = document.createElement("input");
+
+  searchInput.placeholder = "Search shows...";
+  searchInput.style.padding = "8px";
+
+  topBar.appendChild(searchInput);
+  
+  searchInput.addEventListener("input", (event) => {
+    const searchTerm = event.target.value.toLowerCase();
+    const filteredShows = allShows.filter((show) =>
+      show.name.toLowerCase().includes(searchTerm) || (show.summary || "").toLowerCase().includes(searchTerm) || show.genres.some((genre) => genre.toLowerCase().includes(searchTerm)),
+    );
+    
+    content.innerHTML = "";
+    makePageForShows(filteredShows, content);
+  }
+  );
 
   makePageForShows(allShows, content);
 
