@@ -71,7 +71,7 @@ async function setup() {
     }
 
     const episodes = await fetch(
-      `https://api.tvmaze.com/shows/${selectedShowId}/episodes`
+      `https://api.tvmaze.com/shows/${selectedShowId}/episodes`,
     )
       .then((response) => response.json())
       .catch((error) => {
@@ -93,6 +93,23 @@ async function setup() {
     }
 
     makePageForEpisodes(episodes, content);
+    const navigation = document.createElement("div");
+
+    navigation.style.padding = "20px";
+
+    navigation.innerHTML = `
+      <button id="backButton">Back to shows</button>
+    `;
+
+    content.insertBefore(navigation, content.firstChild);
+
+    const backButton = document.getElementById("backButton");
+
+    backButton.addEventListener("click", () => {
+      content.innerHTML = "";
+      makePageForShows(allShows, content);
+      showSelect.value = "";
+    });
   });
 }
 
@@ -100,8 +117,7 @@ function makePageForShows(showList, content) {
   const rootElem = document.createElement("div");
 
   rootElem.style.display = "grid";
-  rootElem.style.gridTemplateColumns =
-    "repeat(auto-fit, minmax(300px, 1fr))";
+  rootElem.style.gridTemplateColumns = "repeat(auto-fit, minmax(300px, 1fr))";
   rootElem.style.gap = "20px";
   rootElem.style.padding = "20px";
 
@@ -118,11 +134,7 @@ function makePageForShows(showList, content) {
     showElem.innerHTML = `
       <h2 class="title">${show.name}</h2>
 
-      ${
-        show.image
-          ? `<img src="${show.image.medium}" alt="${show.name}">`
-          : ""
-      }
+      ${show.image ? `<img src="${show.image.medium}" alt="${show.name}">` : ""}
 
       <p>${show.summary || "No summary available"}</p>
 
@@ -158,7 +170,7 @@ function makePageForShows(showList, content) {
       content.innerHTML = "";
 
       const episodes = await fetch(
-        `https://api.tvmaze.com/shows/${show.id}/episodes`
+        `https://api.tvmaze.com/shows/${show.id}/episodes`,
       )
         .then((response) => response.json())
         .catch((error) => {
@@ -225,8 +237,7 @@ function makePageForEpisodes(episodeList, content) {
   const rootElem = document.createElement("div");
 
   rootElem.style.display = "grid";
-  rootElem.style.gridTemplateColumns =
-    "repeat(auto-fit, minmax(300px, 1fr))";
+  rootElem.style.gridTemplateColumns = "repeat(auto-fit, minmax(300px, 1fr))";
   rootElem.style.gap = "20px";
   rootElem.style.padding = "20px";
 
@@ -255,9 +266,7 @@ function makePageForEpisodes(episodeList, content) {
     episodeElem.style.backgroundColor = "white";
 
     episodeElem.dataset.name = episode.name.toLowerCase();
-    episodeElem.dataset.summary = (
-      episode.summary || ""
-    ).toLowerCase();
+    episodeElem.dataset.summary = (episode.summary || "").toLowerCase();
 
     episodeElem.dataset.id = episode.id;
 
@@ -282,7 +291,7 @@ function makePageForEpisodes(episodeList, content) {
 
   function updateCount() {
     const visibleEpisodes = episodeCards.filter(
-      (card) => card.style.display !== "none"
+      (card) => card.style.display !== "none",
     );
 
     searchCount.textContent = `
